@@ -1,5 +1,5 @@
 {
-  "name": "autodemo",
+  "name": "@skahessay/autodemo",
   "version": "0.1.0",
   "description": "Cinematic demo video recording and compositing helpers for Playwright + ffmpeg",
   "type": "module",
