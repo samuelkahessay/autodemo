@@ -15,16 +15,17 @@ export async function dismissOverlays(page) {
   }
 }
 
-export async function waitForIdle(page, { timeout = 5000, stable = 500 } = {}) {
+export async function waitForIdle(page, { timeout = 5000, stable = 500, maxWait = 10000 } = {}) {
   await page.waitForLoadState('networkidle', { timeout }).catch(() => {})
-  await page.evaluate((ms) => {
+  await page.evaluate(({ ms, maxWait }) => {
     return new Promise((resolve) => {
-      let timer = setTimeout(resolve, ms)
+      const deadline = setTimeout(() => { observer.disconnect(); resolve() }, maxWait)
+      let timer = setTimeout(() => { observer.disconnect(); clearTimeout(deadline); resolve() }, ms)
       const observer = new MutationObserver(() => {
         clearTimeout(timer)
-        timer = setTimeout(() => { observer.disconnect(); resolve() }, ms)
+        timer = setTimeout(() => { observer.disconnect(); clearTimeout(deadline); resolve() }, ms)
       })
       observer.observe(document.body, { childList: true, subtree: true, attributes: true })
     })
-  }, stable)
+  }, { ms: stable, maxWait })
 }

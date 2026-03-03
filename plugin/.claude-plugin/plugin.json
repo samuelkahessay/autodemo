@@ -1,0 +1,7 @@
+{
+  "name": "autodemo",
+  "description": "Generate polished demo videos of any web app. Claude analyzes your codebase, plans the demo, records with Playwright, and composites with ffmpeg.",
+  "author": {
+    "name": "skahessay"
+  }
+}

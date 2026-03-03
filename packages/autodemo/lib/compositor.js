@@ -1,5 +1,5 @@
 import { execFile as execFileCb } from 'node:child_process'
-import { writeFile, mkdir } from 'node:fs/promises'
+import { writeFile, mkdir, unlink, rm } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { promisify } from 'node:util'
 
@@ -25,7 +25,13 @@ export async function generateTitleCard({ text, style = {}, duration = 3, output
 
   await mkdir(dirname(output), { recursive: true })
 
-  const escapedText = text.replace(/'/g, "\\'").replace(/:/g, '\\:')
+  const escapedText = text
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/:/g, '\\:')
+    .replace(/;/g, '\\;')
+    .replace(/\[/g, '\\[')
+    .replace(/\]/g, '\\]')
   const vf = `drawtext=text='${escapedText}':fontsize=${fontSize}:fontcolor=${textColor}:x=(w-text_w)/2:y=(h-text_h)/2`
 
   await exec('ffmpeg', [
@@ -41,17 +47,21 @@ export async function generateTitleCard({ text, style = {}, duration = 3, output
 
 export async function concatSegments(segments, output) {
   const listFile = join(dirname(output), '.filelist.txt')
-  const content = segments.map((s) => `file '${s}'`).join('\n')
+  const content = segments.map((s) => `file '${s.replace(/'/g, "'\\''")}'`).join('\n')
   await writeFile(listFile, content)
 
   await mkdir(dirname(output), { recursive: true })
-  await exec('ffmpeg', [
-    '-f', 'concat', '-safe', '0',
-    '-i', listFile,
-    '-c', 'copy',
-    '-movflags', '+faststart',
-    '-y', output,
-  ])
+  try {
+    await exec('ffmpeg', [
+      '-f', 'concat', '-safe', '0',
+      '-i', listFile,
+      '-c', 'copy',
+      '-movflags', '+faststart',
+      '-y', output,
+    ])
+  } finally {
+    await unlink(listFile).catch(() => {})
+  }
 }
 
 export async function composeVideo({ segments, titles = [], style = {}, output, fps = 30, crf = 18 }) {
@@ -86,4 +96,5 @@ export async function composeVideo({ segments, titles = [], style = {}, output, 
   }
 
   await concatSegments(parts, output)
+  await rm(tmpDir, { recursive: true, force: true })
 }

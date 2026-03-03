@@ -1,1 +1,7 @@
 node_modules/
+.autodemo-tmp/
+.e2e-tmp/
+.filelist.txt
+segments/
+*.webm
+*.mp4

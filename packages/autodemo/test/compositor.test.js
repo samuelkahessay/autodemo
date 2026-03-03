@@ -7,6 +7,8 @@ vi.mock('node:child_process', () => ({
 vi.mock('node:fs/promises', () => ({
   writeFile: vi.fn().mockResolvedValue(undefined),
   mkdir: vi.fn().mockResolvedValue(undefined),
+  unlink: vi.fn().mockResolvedValue(undefined),
+  rm: vi.fn().mockResolvedValue(undefined),
 }))
 
 import { execFile } from 'node:child_process'

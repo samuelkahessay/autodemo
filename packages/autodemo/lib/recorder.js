@@ -30,34 +30,37 @@ export async function recordSegment(browser, {
     await zoomPage(page, zoom)
   }
 
-  for (const action of actions) {
-    if (action.navigate) {
-      const url = action.navigate.startsWith('http')
-        ? action.navigate
-        : baseUrl + action.navigate
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout })
-      await waitForIdle(page)
-      await dismissOverlays(page)
-    } else if (action.click) {
-      await page.click(action.click)
-    } else if (action.type) {
-      await typeSlowly(page, action.type, action.text, { delay: action.delay || 35 })
-    } else if (action.scrollTo) {
-      await smoothScroll(page, {
-        to: action.scrollTo,
-        duration: action.duration || 1500,
-      })
-    } else if (action.wait) {
-      await page.waitForTimeout(action.wait)
-    }
-  }
-
-  // Hold final frame
-  await page.waitForTimeout(1500)
-
   const outputPath = join(outputDir, `${name}.webm`)
-  await context.close()
-  await video.saveAs(outputPath)
+
+  try {
+    for (const action of actions) {
+      if (action.navigate) {
+        const url = action.navigate.includes('://')
+          ? action.navigate
+          : baseUrl + action.navigate
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout })
+        await waitForIdle(page)
+        await dismissOverlays(page)
+      } else if (action.click) {
+        await page.click(action.click)
+      } else if (action.type) {
+        await typeSlowly(page, action.type, action.text, { delay: action.delay || 35 })
+      } else if (action.scrollTo) {
+        await smoothScroll(page, {
+          to: action.scrollTo,
+          duration: action.duration || 1500,
+        })
+      } else if (action.wait) {
+        await page.waitForTimeout(action.wait)
+      }
+    }
+
+    // Hold final frame
+    await page.waitForTimeout(1500)
+  } finally {
+    await context.close()
+    await video.saveAs(outputPath)
+  }
 
   return outputPath
 }
