@@ -9,4 +9,10 @@ describe('autodemo/helpers barrel export', () => {
     expect(helpers.smoothScroll).toBeTypeOf('function')
     expect(helpers.typeSlowly).toBeTypeOf('function')
   })
+
+  it('exports compositor helpers', () => {
+    expect(helpers.reencodeConstantFps).toBeTypeOf('function')
+    expect(helpers.generateTitleCard).toBeTypeOf('function')
+    expect(helpers.concatSegments).toBeTypeOf('function')
+  })
 })
