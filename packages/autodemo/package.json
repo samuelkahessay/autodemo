@@ -1,6 +1,6 @@
 {
   "name": "@skahessay/autodemo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cinematic demo video recording and compositing helpers for Playwright + ffmpeg",
   "type": "module",
   "exports": {
