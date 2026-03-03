@@ -1,0 +1,25 @@
+{
+  "name": "autodemo",
+  "version": "0.1.0",
+  "description": "Cinematic demo video recording and compositing helpers for Playwright + ffmpeg",
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./helpers": "./helpers.js"
+  },
+  "files": [
+    "index.js",
+    "helpers.js",
+    "lib/"
+  ],
+  "dependencies": {
+    "playwright": "^1.50.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  }
+}

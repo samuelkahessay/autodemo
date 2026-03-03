@@ -1,0 +1,8 @@
+{
+  "name": "autodemo-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "plugin"
+  ]
+}
